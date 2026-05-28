@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin Tức Online</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-inner">
+        <div class="logo">📰 Tin Tức Online</div>
+        <nav>
+            <a href="index.html">Trang chủ</a>
+            <a href="#thoisu">Thời sự</a>
+            <a href="#thethao">Thể thao</a>
+            <a href="#congnge">Công nghệ</a>
+            <a href="#giaitri">Giải trí</a>
+        </nav>
+        <div class="header-right">
+            <div id="userArea">
+                <a href="login.html" class="btn-login">Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- SEARCH BAR -->
+<div class="search-bar">
+    <div class="search-inner">
+        <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm tin tức...">
+        <button onclick="searchNews()">Tìm kiếm</button>
+    </div>
+</div>
+
+<!-- BREAKING NEWS -->
+<div class="breaking">
+    <span class="breaking-label">🔴 NÓNG</span>
+    <div class="breaking-text">
+        <span id="breakingText"></span>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="widget">
+            <h3>📂 Danh mục</h3>
+            <ul class="category-list">
+                <li><a href="#" onclick="filterCategory('all')" class="active">Tất cả</a></li>
+                <li><a href="#" onclick="filterCategory('Thời sự')">🗞️ Thời sự</a></li>
+                <li><a href="#" onclick="filterCategory('Thể thao')">⚽ Thể thao</a></li>
+                <li><a href="#" onclick="filterCategory('Công nghệ')">💻 Công nghệ</a></li>
+                <li><a href="#" onclick="filterCategory('Giải trí')">🎬 Giải trí</a></li>
+            </ul>
+        </div>
+        <div class="widget">
+            <h3>🔥 Tin nổi bật</h3>
+            <div id="hotNews"></div>
+        </div>
+    </aside>
+
+    <!-- NEWS LIST -->
+    <main class="main-content">
+        <div id="newsGrid"></div>
+    </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-col">
+            <h4>📰 Tin Tức Online</h4>
+            <p>Website tin tức trực tuyến cập nhật 24/7</p>
+        </div>
+        <div class="footer-col">
+            <h4>Danh mục</h4>
+            <a href="#">Thời sự</a>
+            <a href="#">Thể thao</a>
+            <a href="#">Công nghệ</a>
+        </div>
+        <div class="footer-col">
+            <h4>Liên hệ</h4>
+            <p>Email: tintuc@example.com</p>
+            <p>Hotline: 1900 xxxx</p>
+        </div>
+    </div>
+    <div class="footer-bottom">© 2024 Tin Tức Online - Đồ án Lập trình Ứng dụng Mạng</div>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>

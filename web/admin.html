@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - Tin Tức Online</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f6f8; }
+        .sidebar { width: 230px; background: #2c3e50; height: 100vh; position: fixed;
+                   padding: 0; overflow-y: auto; }
+        .sidebar-header { background: #c0392b; padding: 20px; text-align: center; }
+        .sidebar-header h2 { color: white; font-size: 16px; }
+        .sidebar-header p { color: #fadbd8; font-size: 12px; margin-top: 4px; }
+        .sidebar a { display: flex; align-items: center; gap: 10px; color: #bdc3c7;
+                     padding: 14px 20px; text-decoration: none; font-size: 14px;
+                     border-left: 3px solid transparent; transition: all 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background: #34495e; color: white; border-left-color: #e74c3c; }
+        .content { margin-left: 230px; padding: 30px; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .page-title { font-size: 22px; font-weight: bold; color: #2c3e50; 
+                      margin-bottom: 24px; border-left: 4px solid #e74c3c; padding-left: 12px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
+        .stat-card { background: white; border-radius: 10px; padding: 20px;
+                     box-shadow: 0 1px 6px rgba(0,0,0,0.08); text-align: center; }
+        .stat-icon { font-size: 36px; margin-bottom: 8px; }
+        .stat-number { font-size: 28px; font-weight: bold; color: #c0392b; }
+        .stat-label { font-size: 13px; color: #888; margin-top: 4px; }
+        .btn { padding: 9px 18px; border-radius: 6px; border: none; cursor: pointer;
+               font-size: 14px; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #e74c3c; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+        table { width: 100%; background: white; border-collapse: collapse;
+                border-radius: 10px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+        th { background: #2c3e50; color: white; padding: 13px 16px; text-align: left; font-size: 14px; }
+        td { padding: 13px 16px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafafa; }
+        .form-box { background: white; border-radius: 10px; padding: 28px;
+                    box-shadow: 0 1px 6px rgba(0,0,0,0.08); max-width: 700px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 14px; font-weight: bold;
+                            color: #444; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 14px; border: 2px solid #eee;
+            border-radius: 6px; font-size: 14px; outline: none; transition: border 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #e74c3c; }
+        .form-group textarea { height: 160px; resize: vertical; }
+        .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .badge-red { background: #fdecea; color: #c0392b; }
+        .badge-blue { background: #ebf5fb; color: #2980b9; }
+        .badge-green { background: #eafaf1; color: #27ae60; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert-success { background: #d5f5e3; color: #27ae60; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>⚙️ ADMIN PANEL</h2>
+        <p id="adminName">Quản trị viên</p>
+    </div>
+    <a href="#" class="active" onclick="showPage('dashboard')">📊 Dashboard</a>
+    <a href="#" onclick="showPage('posts')">📝 Quản lý Bài viết</a>
+    <a href="#" onclick="showPage('addPost')">➕ Thêm bài viết</a>
+    <a href="#" onclick="showPage('categories')">📂 Danh mục</a>
+    <a href="#" onclick="showPage('users')">👥 Người dùng</a>
+    <a href="index.html">🏠 Trang chủ</a>
+    <a href="#" onclick="logout()">🚪 Đăng xuất</a>
+</div>
+
+<div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+        <div class="page-title">📊 Dashboard</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-number" id="totalPosts">0</div>
+                <div class="stat-label">Bài viết</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Người dùng</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📂</div>
+                <div class="stat-number">4</div>
+                <div class="stat-label">Danh mục</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💬</div>
+                <div class="stat-number" id="totalComments">0</div>
+                <div class="stat-label">Bình luận</div>
+            </div>
+        </div>
+        <div class="form-box" style="max-width:100%">
+            <h3 style="margin-bottom:16px;color:#2c3e50">📰 Bài viết gần đây</h3>
+            <table><thead><tr><th>Tiêu đề</th><th>Danh mục</th><th>Ngày đăng</th><th>Lượt xem</th></tr></thead>
+            <tbody id="recentPosts"></tbody></table>
+        </div>
+    </div>
+
+    <!-- DANH SÁCH BÀI VIẾT -->
+    <div id="page-posts" class="page">
+        <div class="top-bar">
+            <div class="page-title" style="margin:0">📝 Quản lý Bài viết</div>
+            <button class="btn btn-primary" onclick="showPage('addPost')">+ Thêm bài viết</button>
+        </div>
+        <div class="alert alert-success" id="postAlert">✅ Thao tác thành công!</div>
+        <table><thead><tr><th>#</th><th>Tiêu đề</th><th>Danh mục</th><th>Tác giả</th><th>Ngày</th><th>Thao tác</th></tr></thead>
+        <tbody id="postTable"></tbody></table>
+    </div>
+
+    <!-- THÊM/SỬA BÀI VIẾT -->
+    <div id="page-addPost" class="page">
+        <div class="page-title" id="formTitle">➕ Thêm bài viết mới</div>
+        <div class="form-box">
+            <input type="hidden" id="editId"/>
+            <div class="form-group">
+                <label>Tiêu đề *</label>
+                <input type="text" id="postTitle" placeholder="Nhập tiêu đề bài viết"/>
+            </div>
+            <div class="form-group">
+                <label>Danh mục *</label>
+                <select id="postCategory">
+                    <option>Thời sự</option><option>Thể thao</option>
+                    <option>Công nghệ</option><option>Giải trí</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tóm tắt *</label>
+                <input type="text" id="postSummary" placeholder="Tóm tắt ngắn gọn nội dung bài viết"/>
+            </div>
+            <div class="form-group">
+                <label>Nội dung *</label>
+                <textarea id="postContent" placeholder="Nhập nội dung chi tiết bài viết..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Emoji đại diện</label>
+                <select id="postEmoji">
+                    <option value="🗞️">🗞️ Báo</option><option value="⚽">⚽ Bóng đá</option>
+                    <option value="📱">📱 Điện thoại</option><option value="🎬">🎬 Phim</option>
+                    <option value="💰">💰 Tiền tệ</option><option value="🤖">🤖 AI</option>
+                    <option value="🌍">🌍 Thế giới</option><option value="🏆">🏆 Giải thưởng</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:10px">
+                <button class="btn btn-primary" onclick="savePost()">💾 Lưu bài viết</button>
+                <button class="btn btn-secondary" onclick="showPage('posts')">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DANH MỤC -->
+    <div id="page-categories" class="page">
+        <div class="page-title">📂 Quản lý Danh mục</div>
+        <table><thead><tr><th>#</th><th>Tên danh mục</th><th>Số bài viết</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>🗞️ Thời sự</td><td id="count-thoisu">-</td></tr>
+            <tr><td>2</td><td>⚽ Thể thao</td><td id="count-thethao">-</td></tr>
+            <tr><td>3</td><td>💻 Công nghệ</td><td id="count-congnge">-</td></tr>
+            <tr><td>4</td><td>🎬 Giải trí</td><td id="count-giaitri">-</td></tr>
+        </tbody></table>
+    </div>
+
+    <!-- NGƯỜI DÙNG -->
+    <div id="page-users" class="page">
+        <div class="page-title">👥 Quản lý Người dùng</div>
+        <table><thead><tr><th>#</th><th>Tên đăng nhập</th><th>Họ tên</th><th>Email</th><th>Vai trò</th></tr></thead>
+        <tbody id="userTable"></tbody></table>
+    </div>
+
+</div>
+
+<script>
+// Kiểm tra quyền admin
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+if (!currentUser || currentUser.role !== 'admin') {
+    alert('Bạn không có quyền truy cập!');
+    window.location.href = 'login.html';
+}
+document.getElementById('adminName').textContent = currentUser.username;
+
+// Dữ liệu bài viết (lưu localStorage)
+let posts = JSON.parse(localStorage.getItem('adminPosts')) || [
+    { id:1, title:'Tin tức mẫu 1', category:'Thời sự', summary:'Tóm tắt tin tức mẫu 1', content:'Nội dung chi tiết...', emoji:'🗞️', author:'admin', date:'13/05/2024', views:100, comments:[] },
+    { id:2, title:'Tin tức mẫu 2', category:'Thể thao', summary:'Tóm tắt tin tức mẫu 2', content:'Nội dung chi tiết...', emoji:'⚽', author:'admin', date:'12/05/2024', views:200, comments:[] }
+];
+
+function savePosts() { localStorage.setItem('adminPosts', JSON.stringify(posts)); }
+
+function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (name === 'dashboard') loadDashboard();
+    if (name === 'posts') loadPostTable();
+    if (name === 'users') loadUsers();
+    if (name === 'categories') loadCategories();
+    if (name === 'addPost') { 
+        document.getElementById('formTitle').textContent = '➕ Thêm bài viết mới';
+        document.getElementById('editId').value = '';
+        ['postTitle','postSummary','postContent'].forEach(id => document.getElementById(id).value = '');
+    }
+}
+
+function loadDashboard() {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const totalComments = posts.reduce((sum, p) => sum + p.comments.length, 0);
+    document.getElementById('totalPosts').textContent = posts.length;
+    document.getElementById('totalUsers').textContent = users.length;
+    document.getElementById('totalComments').textContent = totalComments;
+    document.getElementById('recentPosts').innerHTML = posts.slice(0,5).map(p => `
+        <tr><td><b>${p.title}</b></td><td>${p.category}</td><td>${p.date}</td><td>${p.views}</td></tr>
+    `).join('');
+}
+
+function loadPostTable() {
+    document.getElementById('postTable').innerHTML = posts.map((p, i) => `
+        <tr>
+            <td>${i+1}</td>
+            <td><b>${p.title}</b></td>
+            <td><span class="badge badge-red">${p.category}</span></td>
+            <td>${p.author}</td>
+            <td>${p.date}</td>
+            <td>
+                <button class="btn btn-warning" onclick="editPost(${p.id})" style="margin-right:6px">✏️ Sửa</button>
+                <button class="btn btn-danger" onclick="deletePost(${p.id})">🗑️ Xóa</button>
+            </td>
+        </tr>
+    `).join('') || '<tr><td colspan="6" style="text-align:center;color:#888">Chưa có bài viết</td></tr>';
+}
+
+function loadUsers() {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    document.getElementById('userTable').innerHTML = users.map((u, i) => `
+        <tr>
+            <td>${i+1}</td><td><b>${u.username}</b></td>
+            <td>${u.fullName || '-'}</td><td>${u.email || '-'}</td>
+            <td><span class="badge ${u.role==='admin'?'badge-red':'badge-blue'}">${u.role}</span></td>
+        </tr>
+    `).join('');
+}
+
+function loadCategories() {
+    const cats = {'thoisu':'Thời sự','thethao':'Thể thao','congnge':'Công nghệ','giaitri':'Giải trí'};
+    Object.entries(cats).forEach(([key, val]) => {
+        const count = posts.filter(p => p.category === val).length;
+        document.getElementById('count-' + key).textContent = count + ' bài';
+    });
+}
+
+function savePost() {
+    const id = document.getElementById('editId').value;
+    const title = document.getElementById('postTitle').value.trim();
+    const summary = document.getElementById('postSummary').value.trim();
+    const content = document.getElementById('postContent').value.trim();
+    if (!title || !summary || !content) { alert('Vui lòng điền đầy đủ thông tin!'); return; }
+    const post = {
+        id: id ? parseInt(id) : Date.now(),
+        title, summary, content,
+        category: document.getElementById('postCategory').value,
+        emoji: document.getElementById('postEmoji').value,
+        author: currentUser.username,
+        date: new Date().toLocaleDateString('vi-VN'),
+        views: 0, comments: []
+    };
+    if (id) {
+        const idx = posts.findIndex(p => p.id === parseInt(id));
+        if (idx !== -1) { post.views = posts[idx].views; post.comments = posts[idx].comments; posts[idx] = post; }
+    } else {
+        posts.unshift(post);
+    }
+    savePosts();
+    showPage('posts');
+    setTimeout(() => { document.getElementById('postAlert').style.display = 'block';
+        setTimeout(() => document.getElementById('postAlert').style.display = 'none', 2000); }, 100);
+}
+
+function editPost(id) {
+    const p = posts.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('formTitle').textContent = '✏️ Sửa bài viết';
+    document.getElementById('editId').value = p.id;
+    document.getElementById('postTitle').value = p.title;
+    document.getElementById('postSummary').value = p.summary;
+    document.getElementById('postContent').value = p.content;
+    document.getElementById('postCategory').value = p.category;
+    document.getElementById('postEmoji').value = p.emoji;
+    showPage('addPost');
+    document.getElementById('formTitle').textContent = '✏️ Sửa bài viết';
+}
+
+function deletePost(id) {
+    if (!confirm('Bạn có chắc muốn xóa bài viết này?')) return;
+    posts = posts.filter(p => p.id !== id);
+    savePosts();
+    loadPostTable();
+}
+
+function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'login.html';
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
